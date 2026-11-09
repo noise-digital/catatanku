@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Catatan Keuangan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="loadbar" class="loadbar" hidden></div>
+
+<header class="top noprint">
+  <div class="wrap">
+    <span class="brand">Catatan Keuangan</span>
+    <div class="userbox">
+      <span id="userName" class="muted"></span>
+      <button id="btnUsers" class="btn quiet" type="button" hidden>Pengguna</button>
+      <button id="btnLogout" class="btn quiet" type="button">Keluar</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p id="printPeriod" class="printonly"></p>
+
+  <section class="periode noprint" aria-label="Periode laporan">
+    <div class="pfield">
+      <label for="mode">Lihat per</label>
+      <select id="mode">
+        <option value="bulan">Bulan</option>
+        <option value="tahun">Tahun</option>
+        <option value="rentang">Rentang tanggal</option>
+      </select>
+    </div>
+    <div class="pfield" id="gBulan">
+      <label for="inMonth">Bulan</label>
+      <input id="inMonth" type="month">
+    </div>
+    <div class="pfield" id="gTahun" hidden>
+      <label for="inYear">Tahun</label>
+      <input id="inYear" type="number" min="2000" max="2100" step="1">
+    </div>
+    <div class="pfield" id="gDari" hidden>
+      <label for="inFrom">Dari tanggal</label>
+      <input id="inFrom" type="date">
+    </div>
+    <div class="pfield" id="gSampai" hidden>
+      <label for="inTo">Sampai tanggal</label>
+      <input id="inTo" type="date">
+    </div>
+    <div class="pactions">
+      <button id="btnAdd" class="btn" type="button">Tambah transaksi</button>
+      <button id="btnExport" class="btn quiet" type="button">Ekspor CSV</button>
+      <button id="btnPrint" class="btn quiet" type="button">Cetak laporan</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="hRingkasan">
+    <h2 id="hRingkasan" class="sr">Ringkasan periode</h2>
+    <div class="ledger">
+      <div><div class="k" id="kSaldo">Saldo berjalan</div><div class="v" id="vSaldo">-</div></div>
+      <div class="masuk"><div class="k">Pemasukan periode</div><div class="v" id="vMasuk">-</div></div>
+      <div class="keluar"><div class="k">Pengeluaran periode</div><div class="v" id="vKeluar">-</div></div>
+      <div><div class="k">Selisih periode</div><div class="v" id="vSelisih">-</div></div>
+      <div><div class="k">Jumlah transaksi</div><div class="v" id="vJumlah">-</div></div>
+      <div><div class="k">Pengeluaran terbesar</div><div class="v small" id="vKategori">-</div></div>
+    </div>
+    <div class="flow" aria-live="polite">
+      <div class="flow-bar" id="flowBar" role="img" aria-label="Perbandingan pemasukan dan pengeluaran"><span class="in" id="flowIn"></span><span class="out" id="flowOut"></span></div>
+      <div class="flow-legend"><span id="flowInTxt">Pemasukan</span><span id="flowOutTxt">Pengeluaran</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="hGrafik">
+    <h2 id="hGrafik" class="sr">Grafik</h2>
+    <div class="charts">
+      <div class="panel">
+        <h3>Pemasukan dan pengeluaran</h3>
+        <div class="chartbox"><canvas id="cFlow" role="img" aria-label="Grafik batang pemasukan dan pengeluaran periode"></canvas></div>
+        <p class="empty" hidden>Belum ada data pada periode ini.</p>
+      </div>
+      <div class="panel">
+        <h3>Pengeluaran per kategori</h3>
+        <div class="chartbox"><canvas id="cKategori" role="img" aria-label="Grafik batang pengeluaran per kategori"></canvas></div>
+        <p class="empty" hidden>Belum ada pengeluaran pada periode ini.</p>
+      </div>
+      <div class="panel wide">
+        <h3>Tren pengeluaran harian</h3>
+        <div class="chartbox"><canvas id="cHarian" role="img" aria-label="Grafik garis pengeluaran harian"></canvas></div>
+        <p class="empty" hidden>Belum ada pengeluaran pada periode ini.</p>
+      </div>
+      <div class="panel">
+        <h3>Persentase kategori pengeluaran</h3>
+        <div class="chartbox"><canvas id="cPersen" role="img" aria-label="Diagram persentase kategori pengeluaran"></canvas></div>
+        <p class="empty" hidden>Belum ada pengeluaran pada periode ini.</p>
+      </div>
+      <div class="panel">
+        <h3 id="tBulanan">Perbandingan bulanan</h3>
+        <div class="chartbox"><canvas id="cBulanan" role="img" aria-label="Grafik perbandingan pemasukan dan pengeluaran per bulan"></canvas></div>
+        <p class="empty" hidden>Belum ada data pada tahun ini.</p>
+      </div>
+      <div class="panel wide">
+        <h3 id="tTahunan">Laporan tahunan</h3>
+        <p class="muted" id="sTahunan"></p>
+        <div class="chartbox"><canvas id="cTahunan" role="img" aria-label="Grafik arus kas bersih per bulan"></canvas></div>
+        <p class="empty" hidden>Belum ada data pada tahun ini.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="trx" aria-labelledby="hTrx">
+    <h2 id="hTrx">Transaksi</h2>
+    <div class="filters noprint">
+      <div class="pfield grow">
+        <label for="fCari">Cari</label>
+        <input id="fCari" type="search" placeholder="Deskripsi atau kategori">
+      </div>
+      <div class="pfield">
+        <label for="fFilterJenis">Jenis</label>
+        <select id="fFilterJenis">
+          <option value="">Semua</option>
+          <option value="pemasukan">Pemasukan</option>
+          <option value="pengeluaran">Pengeluaran</option>
+        </select>
+      </div>
+      <div class="pfield">
+        <label for="fFilterKategori">Kategori</label>
+        <select id="fFilterKategori"><option value="">Semua</option></select>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Tanggal</th><th scope="col">Deskripsi</th><th scope="col">Jenis</th>
+            <th scope="col">Kategori</th><th scope="col" class="num">Nominal</th><th scope="col">Sumber</th>
+            <th scope="col" class="noprint"><span class="sr">Aksi</span></th>
+          </tr>
+        </thead>
+        <tbody id="trxBody"></tbody>
+      </table>
+      <p id="trxEmpty" class="empty" hidden>Belum ada transaksi pada periode ini. Kirim pesan ke bot WhatsApp atau pilih Tambah transaksi.</p>
+    </div>
+    <div class="pager noprint">
+      <span id="pageInfo" class="muted"></span>
+      <span>
+        <button id="btnPrev" class="btn quiet" type="button">Sebelumnya</button>
+        <button id="btnNext" class="btn quiet" type="button">Berikutnya</button>
+      </span>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlgForm" aria-labelledby="formTitle">
+  <form id="txForm" class="formgrid" novalidate>
+    <h2 id="formTitle">Tambah transaksi</h2>
+    <div>
+      <label for="fJenis">Jenis</label>
+      <select id="fJenis">
+        <option value="pengeluaran">Pengeluaran</option>
+        <option value="pemasukan">Pemasukan</option>
+      </select>
+    </div>
+    <div>
+      <label for="fTanggal">Tanggal</label>
+      <input id="fTanggal" type="date" required>
+    </div>
+    <div>
+      <label for="fKategori">Kategori</label>
+      <select id="fKategori"></select>
+    </div>
+    <div>
+      <label for="fNominal">Nominal (Rupiah)</label>
+      <input id="fNominal" type="number" inputmode="numeric" min="1" step="1" required>
+    </div>
+    <div>
+      <label for="fDeskripsi">Deskripsi</label>
+      <input id="fDeskripsi" type="text" maxlength="200">
+    </div>
+    <p id="formError" class="formerror" role="alert"></p>
+    <div class="actions">
+      <button id="btnCancelForm" class="btn quiet" type="button">Batal</button>
+      <button id="btnSave" class="btn" type="submit">Simpan transaksi</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgDelete" aria-labelledby="delTitle">
+  <div class="formgrid">
+    <h2 id="delTitle">Hapus transaksi?</h2>
+    <p id="delText"></p>
+    <p class="muted">Transaksi yang dihapus tidak dihitung lagi di laporan dan tidak bisa dikembalikan.</p>
+    <div class="actions">
+      <button id="btnCancelDel" class="btn quiet" type="button">Batal</button>
+      <button id="btnConfirmDel" class="btn danger" type="button">Hapus transaksi</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgUsers" class="wide" aria-labelledby="usersTitle">
+  <div class="formgrid">
+    <h2 id="usersTitle">Pengguna</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Nama</th><th scope="col">Peran</th><th scope="col">Status</th><th scope="col">Nomor</th><th scope="col"><span class="sr">Aksi</span></th></tr></thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
+    <form id="userForm" class="formgrid" novalidate>
+      <h3>Tambah pengguna</h3>
+      <div><label for="uNama">Nama</label><input id="uNama" type="text" maxlength="50" required></div>
+      <div><label for="uNomor">Nomor WhatsApp</label><input id="uNomor" type="tel" inputmode="numeric" placeholder="628123456789" required></div>
+      <div>
+        <label for="uRole">Peran</label>
+        <select id="uRole"><option value="user">Pengguna</option><option value="admin">Admin</option></select>
+      </div>
+      <p id="userError" class="formerror" role="alert"></p>
+      <div class="actions">
+        <button id="btnCloseUsers" class="btn quiet" type="button">Tutup</button>
+        <button class="btn" type="submit">Tambah pengguna</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
