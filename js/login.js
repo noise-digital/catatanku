@@ -11,21 +11,33 @@
     return;
   }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  async function login(id, kode) {
     msg.textContent = '';
-    const nomor = form.nomor.value.trim();
-    const kode = form.kode.value.trim();
-    if (!/^\d{8,15}$/.test(nomor.replace(/[\s+\-]/g, ''))) { msg.textContent = 'Nomor tidak valid. Contoh: 628123456789.'; return; }
+    if (!/^\d{5,15}$/.test(id)) { msg.textContent = 'ID Telegram hanya berisi angka.'; return; }
     if (!/^\d{6}$/.test(kode)) { msg.textContent = 'Kode harus 6 digit angka.'; return; }
     btn.disabled = true;
     try {
-      const d = await Api.call('login', { nomor, kode }, { noRedirect: true });
+      const d = await Api.call('login', { id, kode }, { noRedirect: true });
       Api.save(d.token, d.user);
       location.replace('dashboard.html');
     } catch (err) {
       msg.textContent = err.message + (err.code === 'SERVER' ? ' Minta kode baru dengan mengirim LOGIN ke bot.' : '');
       btn.disabled = false;
     }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    login(form.tgid.value.trim(), form.kode.value.trim());
   });
+
+  // Masuk satu ketukan: tautan dari bot berbentuk login.html#id=...&kode=...
+  // Bagian setelah # tidak pernah dikirim ke server; langsung dihapus dari alamat setelah dibaca.
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('id') && h.get('kode')) {
+    history.replaceState(null, '', location.pathname + location.search);
+    form.tgid.value = h.get('id');
+    form.kode.value = h.get('kode');
+    login(h.get('id').trim(), h.get('kode').trim());
+  }
 })();

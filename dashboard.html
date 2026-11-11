@@ -143,7 +143,7 @@
         </thead>
         <tbody id="trxBody"></tbody>
       </table>
-      <p id="trxEmpty" class="empty" hidden>Belum ada transaksi pada periode ini. Kirim pesan ke bot WhatsApp atau pilih Tambah transaksi.</p>
+      <p id="trxEmpty" class="empty" hidden>Belum ada transaksi pada periode ini. Kirim pesan ke bot Telegram atau pilih Tambah transaksi.</p>
     </div>
     <div class="pager noprint">
       <span id="pageInfo" class="muted"></span>
@@ -206,14 +206,14 @@
     <h2 id="usersTitle">Pengguna</h2>
     <div class="tablewrap">
       <table>
-        <thead><tr><th scope="col">Nama</th><th scope="col">Peran</th><th scope="col">Status</th><th scope="col">Nomor</th><th scope="col"><span class="sr">Aksi</span></th></tr></thead>
+        <thead><tr><th scope="col">Nama</th><th scope="col">Peran</th><th scope="col">Status</th><th scope="col">ID Telegram</th><th scope="col"><span class="sr">Aksi</span></th></tr></thead>
         <tbody id="usersBody"></tbody>
       </table>
     </div>
     <form id="userForm" class="formgrid" novalidate>
       <h3>Tambah pengguna</h3>
       <div><label for="uNama">Nama</label><input id="uNama" type="text" maxlength="50" required></div>
-      <div><label for="uNomor">Nomor WhatsApp</label><input id="uNomor" type="tel" inputmode="numeric" placeholder="628123456789" required></div>
+      <div><label for="uNomor">ID Telegram</label><input id="uNomor" type="text" inputmode="numeric" placeholder="123456789" required></div>
       <div>
         <label for="uRole">Peran</label>
         <select id="uRole"><option value="user">Pengguna</option><option value="admin">Admin</option></select>

@@ -327,7 +327,7 @@
       <td data-label="Nama">${esc(u.nama)}</td>
       <td data-label="Peran">${esc(u.role)}</td>
       <td data-label="Status">${u.status_aktif ? 'Aktif' : 'Nonaktif'}</td>
-      <td data-label="Nomor">${esc(u.nomor_whatsapp)}</td>
+      <td data-label="ID Telegram">${esc(u.id_telegram)}</td>
       <td class="aksi">
         <button class="linkbtn" type="button" data-a="${u.status_aktif ? 'deactivate' : 'activate'}" data-id="${esc(u.user_id)}">${u.status_aktif ? 'Nonaktifkan' : 'Aktifkan'}</button>
         <button class="linkbtn danger" type="button" data-a="delete" data-id="${esc(u.user_id)}">Hapus akun</button>
@@ -399,8 +399,8 @@
     $('#userForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const nama = $('#uNama').value.trim(), nomor = $('#uNomor').value.trim();
-      if (!nama || !nomor) { $('#userError').textContent = 'Nama dan nomor wajib diisi.'; return; }
-      userAction('add', { nama, nomor, role: $('#uRole').value }, 'Pengguna ditambahkan.').then(() => { $('#uNama').value = ''; $('#uNomor').value = ''; });
+      if (!nama || !nomor) { $('#userError').textContent = 'Nama dan ID Telegram wajib diisi.'; return; }
+      userAction('add', { nama, id: nomor, role: $('#uRole').value }, 'Pengguna ditambahkan.').then(() => { $('#uNama').value = ''; $('#uNomor').value = ''; });
     });
   }
 

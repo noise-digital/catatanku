@@ -1,12 +1,12 @@
 # Catatan Keuangan — Dashboard
 
-Dashboard web statis (HTML, CSS, JavaScript, Chart.js) untuk aplikasi pencatatan keuangan WhatsApp.
+Dashboard web statis (HTML, CSS, JavaScript, Chart.js) untuk aplikasi pencatatan keuangan lewat bot Telegram.
 Semua data dan logika ada di backend Google Apps Script; repositori ini **hanya tampilan**.
 
 ## Isi
 ```
 index.html        pengarah ke login/dashboard
-login.html        masuk dengan kode dari WhatsApp
+login.html        masuk dengan kode/tautan dari bot Telegram
 dashboard.html    ringkasan, grafik, tabel transaksi
 css/style.css
 js/config.js      <- SATU-SATUNYA berkas yang perlu Anda ubah (alamat Web App)
@@ -20,9 +20,9 @@ js/api.js  js/app.js  js/login.js  js/dashboard.js
 3. Buka alamat `https://USERNAME.github.io/NAMA-REPO/`.
 
 ## Keamanan
-- **Jangan pernah** menaruh token WhatsApp, password, atau ID spreadsheet di repositori ini.
-- Keamanan ada di login (kode sekali pakai lewat WhatsApp) dan token sesi, bukan di alamat Web App.
+- **Jangan pernah** menaruh token bot Telegram, password, atau ID spreadsheet di repositori ini.
+- Keamanan ada di login (kode sekali pakai dari bot Telegram) dan token sesi, bukan di alamat Web App.
 - Token sesi disimpan di `sessionStorage` dan hilang saat tab ditutup.
 - Repositori GitHub Pages gratis bersifat publik: kode terlihat, data keuangan tidak.
 
-Panduan lengkap (deployment, Meta, pengujian) ada di berkas `PANDUAN-DEPLOYMENT.md` dalam paket.
+Panduan lengkap (deployment, bot Telegram, pengujian) ada di berkas `PANDUAN-DEPLOYMENT.md` dalam paket.
